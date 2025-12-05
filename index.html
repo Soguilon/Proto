@@ -1,0 +1,532 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>I202 Hub — Student Profiles, Journal & Memory Book</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root{
+      --bg: #FDF3D6; /* pastel cream */
+      --card: #FFF; 
+      --muted: #8a8a8a;
+      --accent: #9CCFCE; /* cyan */
+      --accent-2: #FFBE98; /* peach */
+      --shadow: 0 6px 18px rgba(44,44,44,0.08);
+      --radius: 14px;
+      --glass: rgba(255,255,255,0.7);
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%;margin:0;font-family:'Poppins',system-ui,-apple-system,Segoe UI,Roboto,"Helvetica Neue",Arial}
+    body{background:linear-gradient(180deg,var(--bg),#FEE3EC);padding:28px;color:#333}
+    .app{max-width:1100px;margin:0 auto}
+
+    header{display:flex;align-items:center;gap:16px;margin-bottom:18px}
+    .brand{display:flex;align-items:center;gap:12px}
+    .logo{width:60px;height:60px;border-radius:12px;background:linear-gradient(135deg,var(--accent),var(--accent-2));display:flex;align-items:center;justify-content:center;color:white;font-weight:700;font-size:22px;box-shadow:var(--shadow)}
+    h1{font-size:20px;margin:0}
+    .subtitle{color:var(--muted);font-size:13px}
+
+    nav{display:flex;gap:10px;margin-left:auto}
+    nav button{background:transparent;border:none;padding:8px 14px;border-radius:10px;cursor:pointer;font-weight:600}
+    nav button.active{background:var(--card);box-shadow:var(--shadow)}
+
+    main{display:grid;grid-template-columns:1fr;gap:18px}
+
+    .panel{background:var(--card);border-radius:var(--radius);padding:18px;box-shadow:var(--shadow)}
+    .grid{display:grid;grid-template-columns:1fr 360px;gap:18px}
+
+    /* Students list */
+    .students-list{display:grid;gap:12px}
+    .student-card{display:flex;gap:12px;align-items:center;padding:12px;border-radius:12px;background:linear-gradient(180deg,var(--glass),rgba(255,255,255,1));border:1px solid rgba(0,0,0,0.03)}
+    .student-card img{width:56px;height:56px;border-radius:10px;object-fit:cover}
+    .student-info{flex:1}
+    .student-name{font-weight:700}
+    .student-meta{font-size:13px;color:var(--muted)}
+    .btn{background:var(--accent);border:none;padding:8px 12px;border-radius:10px;color:#fff;cursor:pointer;font-weight:600}
+    .btn.ghost{background:transparent;color:var(--accent);border:1px solid rgba(0,0,0,0.06)}
+
+    /* Journal */
+    .post-card{border-radius:12px;padding:14px;background:linear-gradient(180deg,#fff, #fff);border:1px solid rgba(0,0,0,0.03)}
+    .post-head{display:flex;gap:12px;align-items:center}
+    .post-head img{width:44px;height:44px;border-radius:10px;object-fit:cover}
+    .post-body{margin-top:10px;font-size:15px}
+    .meta{font-size:12px;color:var(--muted);margin-top:8px;display:flex;gap:10px;align-items:center}
+    .chips{display:inline-flex;gap:6px}
+    .chip{background:#f3f3f3;padding:6px 8px;border-radius:999px;font-size:12px}
+
+    /* Memory book */
+    .gallery{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:10px}
+    .photo{border-radius:10px;overflow:hidden;position:relative}
+    .photo img{width:100%;height:120px;object-fit:cover;display:block}
+    .caption{padding:8px;font-size:13px}
+
+    /* Rant room */
+    .rant{display:flex;flex-direction:column;gap:8px}
+    .rant textarea{width:100%;min-height:92px;padding:10px;border-radius:10px;border:1px solid rgba(0,0,0,0.06)}
+    .reactions{display:flex;gap:10px;align-items:center}
+    .react-btn{background:#f4f4f4;padding:6px 10px;border-radius:999px;border:none}
+
+    footer{margin-top:18px;text-align:center;color:var(--muted);font-size:13px}
+
+    /* responsive */
+    @media (max-width:900px){.grid{grid-template-columns:1fr}.logo{width:48px;height:48px}}
+    .small{font-size:13px}
+
+    /* subtle form styles */
+    label{display:block;font-size:13px;margin-bottom:6px}
+    input[type=text],select,textarea{width:100%;padding:10px;border-radius:10px;border:1px solid rgba(0,0,0,0.06);outline:none}
+    .row{display:flex;gap:10px}
+    .row > *{flex:1}
+    .muted{color:var(--muted)}
+  </style>
+</head>
+<body>
+  <div class="app">
+    <header>
+      <div class="brand">
+        <div class="logo">I2</div>
+        <div>
+          <h1>I202 Hub</h1>
+          <div class="subtitle">A simple safe space for students — profiles, journals, memories & rants</div>
+        </div>
+      </div>
+
+      <nav aria-label="main nav">
+        <button class="nav-btn active" data-page="home">Home</button>
+        <button class="nav-btn" data-page="students">Students</button>
+        <button class="nav-btn" data-page="journal">Journal</button>
+        <button class="nav-btn" data-page="memory">Memory Book</button>
+        <button class="nav-btn" data-page="rant">Rant Room</button>
+      </nav>
+    </header>
+
+    <main>
+      <!-- home -->
+      <section class="panel" id="page-home">
+        <div class="grid">
+          <div>
+            <h2>Welcome to I202 Hub</h2>
+            <p class="muted">This single-file demo stores data locally in your browser (localStorage). Use the forms to create profiles, post journals, upload photos, and rant anonymously. No account needed.</p>
+
+            <div style="margin-top:12px" id="quick-actions">
+              <!-- Removed Create Profile button -->
+              <button class="btn ghost" id="new-post-btn">New Journal Entry</button>
+              <button class="btn ghost" id="open-memory-btn">Add Memory</button>
+            </div>
+
+            <hr style="margin:16px 0">
+
+            <h3>Recent Public Posts</h3>
+            <div id="recent-posts" class="students-list"></div>
+          </div>
+
+          <aside>
+            <div class="panel">
+              <h3>Quick Student Preview</h3>
+              <div id="students-preview" class="students-list" style="max-height:360px;overflow:auto;padding-right:6px"></div>
+              <hr>
+              <div class="muted small">Privacy note: Private posts are only visible when "viewing" a student profile. Anonymous posts show no name.</div>
+            </div>
+          </aside>
+        </div>
+      </section>
+
+      <!-- students -->
+      <section class="panel" id="page-students" style="display:none">
+        <div style="display:flex;gap:18px;align-items:flex-start">
+          <div style="flex:1">
+            <h2>Students</h2>
+            <p class="muted">Click a student to view their profile. Use the form on the right to add or edit a profile.</p>
+            <div id="students-list" style="margin-top:12px" class="students-list"></div>
+          </div>
+
+          <div style="width:360px">
+            <div class="panel">
+              <h3 id="profile-form-title">Create Profile</h3>
+              <form id="profile-form">
+                <label for="pname">Full name</label>
+                <input id="pname" required type="text" placeholder="e.g. Juan Dela Cruz">
+
+                <label for="pcourse">Course / Year</label>
+                <input id="pcourse" type="text" placeholder="e.g. BSIS 2nd Year">
+
+                <label for="phobbies">Hobbies / Interests</label>
+                <input id="phobbies" type="text" placeholder="e.g. coding, singing">
+
+                <label for="pbio">Short bio</label>
+                <textarea id="pbio" rows="3" placeholder="A sentence about u..."></textarea>
+
+                <label for="ppic">Profile picture (optional)</label>
+                <input id="ppic" type="file" accept="image/*">
+
+                <div style="display:flex;gap:8px;margin-top:10px">
+                  <button class="btn" type="submit">Save Profile</button>
+                  <button class="btn ghost" id="cancel-edit" type="button">Cancel</button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- journal -->
+      <section class="panel" id="page-journal" style="display:none">
+        <h2>Journal</h2>
+        <p class="muted">Write short posts. Choose Public, Private, or Anonymous. Private posts are visible only when viewing your profile.</p>
+
+        <div style="display:flex;gap:18px;margin-top:12px">
+          <div style="flex:1">
+            <div style="margin-bottom:10px;display:flex;gap:8px;align-items:center">
+              <select id="filter-visibility"><option value="all">All (public & anonymous)</option><option value="public">Public only</option><option value="anonymous">Anonymous only</option></select>
+              <input id="search-posts" placeholder="search posts...">
+              <button class="btn ghost" id="compose-post">New Post</button>
+            </div>
+
+            <div id="posts-container"></div>
+          </div>
+
+          <aside style="width:360px">
+            <div class="panel">
+              <h3>My Posts</h3>
+              <div id="my-posts" style="max-height:360px;overflow:auto;padding-right:6px"></div>
+            </div>
+          </aside>
+        </div>
+      </section>
+
+      <!-- memory book -->
+      <section class="panel" id="page-memory" style="display:none">
+        <h2>Memory Book</h2>
+        <p class="muted">Upload photos from class events, campus, or achievements. Captions allowed.</p>
+
+        <div style="margin-top:12px;display:flex;gap:12px;align-items:center">
+          <input type="file" id="memory-file" accept="image/*" multiple>
+          <input id="memory-caption" placeholder="caption for selected files..." style="flex:1">
+          <button class="btn" id="add-memory">Upload</button>
+        </div>
+
+        <div style="margin-top:14px" class="gallery" id="gallery"></div>
+      </section>
+
+      <!-- rant room -->
+      <section class="panel" id="page-rant" style="display:none">
+        <h2>Rant Room — Anonymous</h2>
+        <p class="muted">Post anonymously. React with emojis. This is a safe space — please be kind.</p>
+
+        <div class="rant">
+          <textarea id="rant-text" placeholder="Let it out... be kind to others"></textarea>
+          <div style="display:flex;gap:8px;align-items:center">
+            <label class="muted small">Mood tag</label>
+            <select id="rant-tag"><option>😤 frustrated</option><option>😔 sad</option><option>😅 relieved</option><option>😵 overwhelmed</option><option>😊 happy</option></select>
+            <button class="btn" id="post-rant">Post Anonymously</button>
+          </div>
+        </div>
+
+        <hr style="margin:12px 0">
+        <div id="rants-list"></div>
+      </section>
+
+    </main>
+
+    <footer class="muted">Designed for demo purposes • data saved locally in this browser only</footer>
+  </div>
+
+  <script>
+    /***********************
+      Simple client-side data store (localStorage)
+    ************************/ 
+    const STORE_KEY = 'i202hub_v1';
+
+    const defaultState = {
+      students: [
+        {id:'s1',name:'Alyssa M.',course:'BSIS 2nd Year',hobbies:'reading, coffee',bio:'Love puzzles and late night coding',avatar:null, posts:['p2']},
+        {id:'s2',name:'Miguel D.',course:'BSIS 2nd Year',hobbies:'basketball, guitar',bio:'Chill and competitive',avatar:null, posts:['p1']}
+      ],
+      posts: [
+        {id:'p1',author:'s2',visibility:'public',content:'Today\'s mood: 😴 stressed pero laban! #midterms',created:Date.now()-1000*60*60*8},
+        {id:'p2',author:'s1',visibility:'anonymous',content:'Anonymous thought: Bakit napaka-traffic today pero ok lang',created:Date.now()-1000*60*60*2}
+      ],
+      memories: [],
+      rants: [
+        {id:'r1',text:'I just want to sleep but i have a project due',tag:'😤 frustrated',time:Date.now(),reactions:{'💗':2,'😂':0,'🤔':0,'😭':1}}
+      ]
+    };
+
+    function loadState(){
+      try{
+        const raw = localStorage.getItem(STORE_KEY);
+        if(!raw) return structuredClone(defaultState);
+        return JSON.parse(raw);
+      }catch(e){console.error(e);return structuredClone(defaultState)}
+    }
+    function saveState(state){localStorage.setItem(STORE_KEY,JSON.stringify(state))}
+
+    let state = loadState();
+
+    /***********************
+      Utilities
+    ************************/
+    const qs = s=>document.querySelector(s);
+    const qsa = s=>Array.from(document.querySelectorAll(s));
+    function uid(prefix='id'){return prefix+Math.random().toString(36).slice(2,9)}
+
+    function formatTime(ts){const d=new Date(ts);return d.toLocaleString()}
+
+    // small profanity filter (client-side only) - blocks posts containing banned words
+    const banned = ['idiot','stupid','kill','suicide','slur'];
+    function containsBanned(text){const t = text.toLowerCase();return banned.some(w=>t.includes(w));}
+
+    /***********************
+      Navigation
+    ************************/
+    qsa('.nav-btn').forEach(btn=>btn.addEventListener('click',e=>{
+      qsa('.nav-btn').forEach(b=>b.classList.remove('active'));
+      btn.classList.add('active');
+      showPage(btn.dataset.page);
+    }));
+
+    function showPage(p){
+      ['home','students','journal','memory','rant'].forEach(k=>{
+        const el = qs('#page-'+k);
+        if(el) el.style.display = (k===p? 'block':'none');
+      });
+      // refresh views
+      renderAll();
+    }
+
+    /***********************
+      Rendering
+    ************************/
+    function renderAll(){renderStudentsPreview();renderStudentsList();renderRecentPosts();renderPosts();renderMyPosts();renderGallery();renderRants();}
+
+    function renderStudentsPreview(){
+      const container = qs('#students-preview'); container.innerHTML='';
+      state.students.forEach(s=>{
+        const div = document.createElement('div');div.className='student-card';
+        div.innerHTML = `<img src="${s.avatar||placeholderAvatar(s.name)}" alt=""><div class="student-info"><div class="student-name">${s.name}</div><div class="student-meta">${s.course} · ${s.hobbies}</div></div><div><button class='btn ghost view-profile' data-id='${s.id}'>View</button></div>`;
+        container.appendChild(div);
+      })
+      qsa('.view-profile').forEach(b=>b.addEventListener('click',e=>openProfile(b.dataset.id)));
+    }
+
+    function placeholderAvatar(name){
+      const initials = name.split(' ').map(n=>n[0]).slice(0,2).join('');
+      const svg = `<svg xmlns='http://www.w3.org/2000/svg' width='120' height='120'><rect width='100%' height='100%' fill='#d9d9d9'/><text x='50%' y='55%' font-size='40' text-anchor='middle' fill='#555' font-family='Poppins'>${initials}</text></svg>`;
+      return 'data:image/svg+xml;utf8,'+encodeURIComponent(svg);
+    }
+
+    function renderStudentsList(){
+      const container = qs('#students-list'); container.innerHTML='';
+      state.students.forEach(s=>{
+        const div = document.createElement('div');div.className='student-card';
+        div.innerHTML = `<img src="${s.avatar||placeholderAvatar(s.name)}" alt=""><div class="student-info"><div class="student-name">${s.name}</div><div class="student-meta">${s.course} · ${s.hobbies}</div></div><div><button class='btn' data-id='${s.id}'>Open</button></div>`;
+        container.appendChild(div);
+      });
+      qsa('#students-list .btn').forEach(b=>b.addEventListener('click',e=>openProfile(b.dataset.id)));
+    }
+
+    function renderRecentPosts(){
+      const container = qs('#recent-posts'); container.innerHTML='';
+      const publicPosts = state.posts.filter(p=>p.visibility==='public' || p.visibility==='anonymous');
+      publicPosts.sort((a,b)=>b.created-a.created);
+      publicPosts.slice(0,6).forEach(p=>{
+        const author = state.students.find(s=>s.id===p.author);
+        const div = document.createElement('div');div.className='post-card';
+        div.innerHTML = `<div class='post-head'><img src='${(author && author.avatar) || placeholderAvatar(author?author.name:'Anon')}' alt=''><div><div style='font-weight:700'>${p.visibility==='anonymous' ? 'Anonymous' : (author?author.name:'[deleted]')}</div><div class='muted small'>${formatTime(p.created)}</div></div></div><div class='post-body'>${escapeHtml(p.content)}</div>`;
+        container.appendChild(div);
+      })
+    }
+
+    function renderPosts(){
+      const container = qs('#posts-container'); container.innerHTML='';
+      const filter = qs('#filter-visibility').value;
+      let posts = state.posts.slice().sort((a,b)=>b.created-a.created);
+      if(filter==='public') posts = posts.filter(p=>p.visibility==='public');
+      if(filter==='anonymous') posts = posts.filter(p=>p.visibility==='anonymous');
+      const q = qs('#search-posts').value.trim().toLowerCase();
+      if(q) posts = posts.filter(p=>p.content.toLowerCase().includes(q));
+
+      posts.forEach(p=>{
+        const author = state.students.find(s=>s.id===p.author);
+        const card = document.createElement('div');card.className='post-card';
+        card.innerHTML = `
+          <div class='post-head'>
+            <img src='${(author && author.avatar) || placeholderAvatar(author?author.name:'Anon')}' alt=''>
+            <div>
+              <div style='font-weight:700'>${p.visibility==='anonymous' ? 'Anonymous' : (author?author.name:'[deleted]')}</div>
+              <div class='muted small'>${formatTime(p.created)} · ${p.visibility}</div>
+            </div>
+          </div>
+          <div class='post-body'>${escapeHtml(p.content)}</div>
+        `;
+        container.appendChild(card);
+      })
+    }
+
+    function renderMyPosts(){
+      const container = qs('#my-posts'); container.innerHTML='';
+      state.students.forEach(s=>{
+        const header = document.createElement('div');header.style.marginBottom='6px';header.innerHTML=`<div style='font-weight:700'>${s.name}</div>`;
+        container.appendChild(header);
+        const list = document.createElement('div');list.style.marginBottom='8px';
+        const posts = state.posts.filter(p=>p.author===s.id).sort((a,b)=>b.created-a.created);
+        if(posts.length===0){list.innerHTML='<div class="muted small">No posts yet</div>'}
+        posts.forEach(p=>{
+          const el = document.createElement('div');el.className='post-card';el.style.marginBottom='8px';
+          el.innerHTML = `<div class='muted small'>${formatTime(p.created)} · ${p.visibility}</div><div style='margin-top:6px'>${escapeHtml(p.content)}</div>`;
+          list.appendChild(el);
+        });
+        container.appendChild(list);
+      })
+    }
+
+    function renderGallery(){
+      const container = qs('#gallery'); container.innerHTML='';
+      state.memories.slice().reverse().forEach(m=>{
+        const d = document.createElement('div');d.className='photo';
+        d.innerHTML = `<img src='${m.data}' alt=''><div class='caption'>${escapeHtml(m.caption||'')}</div>`;
+        container.appendChild(d);
+      })
+    }
+
+    function renderRants(){
+      const container = qs('#rants-list'); container.innerHTML='';
+      state.rants.slice().reverse().forEach(r=>{
+        const card = document.createElement('div');card.className='post-card';
+        card.style.marginBottom='10px';
+        card.innerHTML = `<div class='post-head'><div style='width:44px;height:44px;border-radius:10px;background:#f0f0f0;display:flex;align-items:center;justify-content:center;font-weight:700'>AN</div><div style='margin-left:10px'><div style='font-weight:700'>Anonymous</div><div class='muted small'>${r.tag} · ${formatTime(r.time)}</div></div></div><div style='margin-top:10px'>${escapeHtml(r.text)}</div><div class='meta' style='margin-top:8px'><div class='reactions' data-id='${r.id}'>${renderReactionsInline(r.reactions)}</div></div>`;
+        container.appendChild(card);
+      });
+      qsa('.reactions button').forEach(b=>b.addEventListener('click',e=>{
+        const id = b.closest('.reactions').dataset.id;
+        addRantReaction(id,b.dataset.emoji);
+      }));
+    }
+
+    function renderReactionsInline(reactions){
+      const keys = ['💗','😂','🤔','😭'];
+      return keys.map(k=>`<button class='react-btn' data-emoji='${k}'>${k} ${reactions && reactions[k]? reactions[k] : 0}</button>`).join(' ');
+    }
+
+    /***********************
+      Actions
+    ************************/
+    // open profile modal-ish area
+    function openProfile(id){
+      const s = state.students.find(st=>st.id===id);
+      if(!s) return alert('Student not found');
+      const overlay = document.createElement('div');overlay.style.position='fixed';overlay.style.inset='0';overlay.style.background='rgba(0,0,0,0.4)';overlay.style.display='flex';overlay.style.alignItems='center';overlay.style.justifyContent='center';overlay.style.zIndex=9999;
+      const box = document.createElement('div');box.style.width='720px';box.style.maxWidth='92%';box.className='panel';
+      box.innerHTML = `<div style='display:flex;gap:16px;align-items:center'><img src='${s.avatar||placeholderAvatar(s.name)}' style='width:84px;height:84px;border-radius:12px;object-fit:cover'><div><div style='font-weight:800;font-size:18px'>${s.name}</div><div class='muted'>${s.course} · ${s.hobbies}</div></div><div style='margin-left:auto'><button class='btn' id='edit-profile'>Edit</button></div></div><div style='margin-top:12px'>${escapeHtml(s.bio)}</div><hr style='margin:10px 0'><div><h4>Posts</h4><div id='profile-posts'></div></div><div style='text-align:right;margin-top:10px'><button class='btn ghost' id='close-profile'>Close</button></div>`;
+      overlay.appendChild(box);document.body.appendChild(overlay);
+      const pp = box.querySelector('#profile-posts');
+      const posts = state.posts.filter(p=>p.author===s.id).sort((a,b)=>b.created-a.created);
+      posts.forEach(p=>{ 
+        const el = document.createElement('div');el.className='post-card';el.style.marginBottom='8px';
+        el.innerHTML = `<div class='muted small'>${formatTime(p.created)} · ${p.visibility}</div><div style='margin-top:6px'>${escapeHtml(p.visibility==='anonymous' ? p.content : p.content)}</div>`;
+        pp.appendChild(el);
+      });
+
+      box.querySelector('#close-profile').addEventListener('click',()=>overlay.remove());
+      box.querySelector('#edit-profile').addEventListener('click',()=>{overlay.remove();populateProfileForm(s);qsa('.nav-btn').forEach(b=>b.classList.remove('active'));document.querySelector(".nav-btn[data-page='students']").classList.add('active');showPage('students');});
+    }
+
+    // profile form
+    const profileForm = qs('#profile-form');
+    let editingId = null;
+    profileForm.addEventListener('submit',async e=>{
+      e.preventDefault();
+      const name = qs('#pname').value.trim();
+      const course = qs('#pcourse').value.trim();
+      const hobbies = qs('#phobbies').value.trim();
+      const bio = qs('#pbio').value.trim();
+      const file = qs('#ppic').files[0];
+      if(!name) return alert('Please enter a name');
+      let avatar = null;
+      if(file){avatar = await toDataURLAsync(file);}
+      if(editingId){
+        const st = state.students.find(s=>s.id===editingId);
+        st.name=name;st.course=course;st.hobbies=hobbies;st.bio=bio; if(avatar) st.avatar=avatar;
+      }else{
+        const id = uid('s');
+        state.students.push({id,name,course,hobbies,bio,avatar,posts:[]});
+      }
+      saveState(state);renderAll();profileForm.reset();editingId=null;qs('#profile-form-title').innerText='Create Profile';
+    });
+    qs('#cancel-edit').addEventListener('click',()=>{profileForm.reset();editingId=null;qs('#profile-form-title').innerText='Create Profile'});
+
+    function populateProfileForm(s){
+      editingId = s.id;qs('#pname').value = s.name;qs('#pcourse').value=s.course;qs('#phobbies').value=s.hobbies;qs('#pbio').value=s.bio;qs('#profile-form-title').innerText='Edit Profile';
+    }
+
+    function toDataURLAsync(file){return new Promise((res,rej)=>{const fr=new FileReader();fr.onload=()=>res(fr.result);fr.onerror=rej;fr.readAsDataURL(file)})}
+
+    // New Post flow (Journal)
+    qs('#compose-post').addEventListener('click',()=>openCompose());
+    qs('#new-post-btn').addEventListener('click',()=>openCompose());
+
+    function openCompose(){
+      const overlay = document.createElement('div');overlay.style.position='fixed';overlay.style.inset='0';overlay.style.background='rgba(0,0,0,0.4)';overlay.style.display='flex';overlay.style.alignItems='center';overlay.style.justifyContent='center';overlay.style.zIndex=9999;
+      const box = document.createElement('div');box.style.width='720px';box.style.maxWidth='92%';box.className='panel';
+      box.innerHTML = `<h3>New Post</h3><div style='display:flex;gap:8px;margin-top:8px'><select id='post-author'></select><select id='post-visibility'><option value='public'>Public</option><option value='private'>Private</option><option value='anonymous'>Anonymous</option></select></div><div style='margin-top:10px'><textarea id='post-content' rows='6' placeholder='Write something...'></textarea></div><div style='display:flex;gap:8px;margin-top:8px;justify-content:flex-end'><button class='btn' id='save-post'>Post</button><button class='btn ghost' id='cancel-post'>Cancel</button></div>`;
+      overlay.appendChild(box);document.body.appendChild(overlay);
+      const authorSelect = box.querySelector('#post-author');
+      state.students.forEach(s=>{const opt=document.createElement('option');opt.value=s.id;opt.textContent=s.name;authorSelect.appendChild(opt)});
+      box.querySelector('#cancel-post').addEventListener('click',()=>overlay.remove());
+      box.querySelector('#save-post').addEventListener('click',()=>{
+        const author = authorSelect.value; const visibility = box.querySelector('#post-visibility').value; const content = box.querySelector('#post-content').value.trim();
+        if(!content) return alert('Please write something');
+        if(containsBanned(content)) return alert('Your post contains words that are not allowed in this demo');
+        const id = uid('p');
+        state.posts.push({id,author,visibility,content,created:Date.now()});
+        saveState(state);renderAll();overlay.remove();
+      });
+    }
+
+    // Memory uploads
+    qs('#add-memory').addEventListener('click',async ()=>{
+      const files = qs('#memory-file').files; const caption = qs('#memory-caption').value.trim();
+      if(!files || files.length===0) return alert('Select one or more images');
+      for(const f of files){
+        const data = await toDataURLAsync(f);
+        state.memories.push({id:uid('m'),data,caption,created:Date.now()});
+      }
+      qs('#memory-file').value='';qs('#memory-caption').value='';saveState(state);renderGallery();
+    });
+
+    // Rant posting
+    qs('#post-rant').addEventListener('click',()=>{
+      const text = qs('#rant-text').value.trim(); const tag = qs('#rant-tag').value;
+      if(!text) return alert('Write your rant');
+      if(containsBanned(text)) return alert('Your rant contains prohibited words in this demo');
+      const r = {id:uid('r'),text,tag,time:Date.now(),reactions:{'💗':0,'😂':0,'🤔':0,'😭':0}};
+      state.rants.push(r);saveState(state);qs('#rant-text').value='';renderRants();
+    });
+
+    function addRantReaction(id,emoji){
+      const r = state.rants.find(x=>x.id===id);
+      if(!r) return; r.reactions[emoji] = (r.reactions[emoji]||0)+1; saveState(state);renderRants();
+    }
+
+    function escapeHtml(s){if(!s) return '';return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\n/g,'<br>')}
+
+    // top buttons
+    qs('#open-memory-btn').addEventListener('click',()=>{qsa('.nav-btn').forEach(b=>b.classList.remove('active'));document.querySelector(".nav-btn[data-page='memory']").classList.add('active');showPage('memory');});
+
+    // search & filter
+    qs('#filter-visibility').addEventListener('change',renderPosts);
+    qs('#search-posts').addEventListener('input',debounce(renderPosts,300));
+
+    function debounce(fn,ms){let t;return (...a)=>{clearTimeout(t);t=setTimeout(()=>fn(...a),ms)}}
+
+    // initial render
+    renderAll();
+
+    // keyboard shortcut P -> open composer
+    window.addEventListener('keydown',e=>{if(e.key.toLowerCase()==='p' && (document.activeElement.tagName!=='INPUT' && document.activeElement.tagName!=='TEXTAREA')){openCompose()}})
+  </script>
+</body>
+</html>
+
+
